@@ -17,6 +17,7 @@ func main() {
 
 	r.Post("/", urlShortenerHandler.PostHandler)
 	r.Get("/{id}", urlShortenerHandler.GetHandler)
+	r.Post("/shorten", urlShortenerHandler.PostShortenHandler)
 
 	err := http.ListenAndServe(":8080", r)
 	if err != nil {
