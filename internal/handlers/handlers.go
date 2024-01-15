@@ -16,11 +16,17 @@ type URLShortenerHandler struct {
 	BaseResponseURL string
 }
 
-func NewURLShortenerHandler(baseResponseURL string) *URLShortenerHandler {
-	return &URLShortenerHandler{
-		URLRepository:   storage.NewURLStorage(),
-		BaseResponseURL: baseResponseURL,
+func NewURLShortenerHandler(baseResponseURL, fileStoragePath string) (*URLShortenerHandler, error) {
+
+	urlRepository, err := storage.NewURLStorage(fileStoragePath)
+	if err != nil {
+		return nil, err
 	}
+
+	return &URLShortenerHandler{
+		URLRepository:   urlRepository,
+		BaseResponseURL: baseResponseURL,
+	}, nil
 }
 
 func (handler *URLShortenerHandler) PostHandler(w http.ResponseWriter, r *http.Request) {

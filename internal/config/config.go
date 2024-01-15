@@ -9,17 +9,20 @@ import (
 type Configuration struct {
 	Address         string
 	BaseResponseURL string
+	FileStoragePath string
 }
 
 type EnvConfiguration struct {
-	ServerAddress string `env:"SERVER_ADDRESS"`
-	BaseURL       string `env:"BASE_URL"`
+	ServerAddress   string `env:"SERVER_ADDRESS"`
+	BaseURL         string `env:"BASE_URL"`
+	FileStoragePath string `env:"FILE_STORAGE_PATH"`
 }
 
 func NewConfiguration() *Configuration {
 	return &Configuration{
 		Address:         "localhost:8080",
 		BaseResponseURL: "http://localhost:8080/",
+		FileStoragePath: "/tmp/short_url.json",
 	}
 }
 
@@ -37,6 +40,10 @@ func (c *Configuration) ParseConfiguration() {
 
 	if len(cfg.BaseURL) > 0 {
 		c.BaseResponseURL = cfg.BaseURL
+	}
+
+	if len(cfg.FileStoragePath) > 0 {
+		c.FileStoragePath = cfg.FileStoragePath
 	}
 
 }
