@@ -8,12 +8,15 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/qaa-engineer/shortener/internal/config"
 	"github.com/qaa-engineer/shortener/internal/handlers"
+	"github.com/qaa-engineer/shortener/internal/middlewares"
 )
 
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.AllowContentType("text/plain"))
+
+	r.Use(middlewares.GzipMiddleware)
 
 	cfg := config.NewConfiguration()
 	urlShortenerHandler, err := handlers.NewURLShortenerHandler(cfg.BaseResponseURL, cfg.FileStoragePath)
