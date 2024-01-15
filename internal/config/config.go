@@ -1,7 +1,9 @@
 package config
 
 import (
+	"flag"
 	"fmt"
+	"net/url"
 
 	"github.com/caarlos0/env/v6"
 )
@@ -27,6 +29,41 @@ func NewConfiguration() *Configuration {
 }
 
 func (c *Configuration) ParseConfiguration() {
+
+	flag.Func("a", "адрес запуска HTTP-сервера (переменная SERVER_ADDRESS)", func(s string) error {
+		_, err := url.ParseRequestURI(s)
+		if err != nil {
+			return err
+		}
+
+		c.Address = s
+
+		return nil
+	})
+
+	flag.Func("b", "базовый адрес результирующего сокращённого URL (переменная BASE_URL)", func(s string) error {
+		_, err := url.ParseRequestURI(s)
+		if err != nil {
+			return err
+		}
+
+		c.BaseResponseURL = s
+
+		return nil
+	})
+
+	flag.Func("f", "путь до файла с сокращёнными URL (переменная FILE_STORAGE_PATH)", func(s string) error {
+
+		if len(s) == 0 {
+			c.FileStoragePath = ""
+			return nil
+		}
+
+		c.FileStoragePath = s
+		return nil
+	})
+
+	flag.Parse()
 
 	cfg := EnvConfiguration{}
 	err := env.Parse(&cfg)
