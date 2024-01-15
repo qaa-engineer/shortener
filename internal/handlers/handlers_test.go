@@ -19,10 +19,10 @@ func TestURLShortenerHandler_GetHandler(t *testing.T) {
 	shortURL := "KFDaxKze"
 	fullURL := "https://practicum.yandex.ru/learn/go-advanced-self-paced/courses/8bca0296-484d-45dc-b9ab-f01e0f44f9f4/sprints/145736/topics/63027ac1-f19b-405d-bad5-49e3bbddf30b/lessons/572d89a8-1713-457a-927a-90c2280757bc/"
 	type fields struct {
-		URLRepository storage.URLRepository
-		target        string
-		url           string
-		store         bool
+		fileStoragePath string
+		target          string
+		url             string
+		store           bool
 	}
 	type want struct {
 		code        int
@@ -37,10 +37,10 @@ func TestURLShortenerHandler_GetHandler(t *testing.T) {
 		{
 			name: "positive test",
 			fields: fields{
-				URLRepository: storage.NewURLStorage(),
-				target:        shortURL,
-				url:           fullURL,
-				store:         true,
+				fileStoragePath: "",
+				target:          shortURL,
+				url:             fullURL,
+				store:           true,
 			},
 			want: want{
 				code:        http.StatusTemporaryRedirect,
@@ -51,8 +51,10 @@ func TestURLShortenerHandler_GetHandler(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			urlStorage, _ := storage.NewURLStorage(test.fields.fileStoragePath)
 			handler := &URLShortenerHandler{
-				URLRepository: test.fields.URLRepository,
+				URLRepository:   urlStorage,
+				BaseResponseURL: "http://example.com/",
 			}
 			if test.fields.store {
 				handler.URLRepository.AddURL(test.fields.target, test.fields.url)
@@ -80,9 +82,9 @@ func TestURLShortenerHandler_GetHandler(t *testing.T) {
 func TestURLShortenerHandler_PostHandler(t *testing.T) {
 	fullURL := "https://practicum.yandex.ru/learn/go-advanced-self-paced/courses/8bca0296-484d-45dc-b9ab-f01e0f44f9f4/sprints/145736/topics/63027ac1-f19b-405d-bad5-49e3bbddf30b/lessons/572d89a8-1713-457a-927a-90c2280757bc/"
 	type fields struct {
-		URLRepository storage.URLRepository
-		target        string
-		url           string
+		fileStoragePath string
+		target          string
+		url             string
 	}
 	type want struct {
 		code        int
@@ -97,9 +99,9 @@ func TestURLShortenerHandler_PostHandler(t *testing.T) {
 		{
 			name: "positive test",
 			fields: fields{
-				URLRepository: storage.NewURLStorage(),
-				target:        "/",
-				url:           fullURL,
+				fileStoragePath: "",
+				target:          "/",
+				url:             fullURL,
 			},
 			want: want{
 				code:        http.StatusCreated,
@@ -110,8 +112,10 @@ func TestURLShortenerHandler_PostHandler(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			urlStorage, _ := storage.NewURLStorage(test.fields.fileStoragePath)
 			handler := &URLShortenerHandler{
-				URLRepository: test.fields.URLRepository,
+				URLRepository:   urlStorage,
+				BaseResponseURL: "http://example.com/",
 			}
 			w := httptest.NewRecorder()
 			r := httptest.NewRequest(http.MethodPost, test.fields.target, bytes.NewReader([]byte(test.fields.url)))
@@ -135,9 +139,9 @@ func TestURLShortenerHandler_PostHandler(t *testing.T) {
 
 func TestURLShortenerHandler_PostShortenHandler(t *testing.T) {
 	type fields struct {
-		URLRepository  storage.URLRepository
-		target         string
-		shortenRequest ShortenRequest
+		fileStoragePath string
+		target          string
+		shortenRequest  ShortenRequest
 	}
 	type want struct {
 		code            int
@@ -152,8 +156,8 @@ func TestURLShortenerHandler_PostShortenHandler(t *testing.T) {
 		{
 			name: "positive test",
 			fields: fields{
-				URLRepository: storage.NewURLStorage(),
-				target:        "/api/shorten",
+				fileStoragePath: "",
+				target:          "/api/shorten",
 				shortenRequest: ShortenRequest{
 					URL: "https://practicum.yandex.ru/learn/go-advanced-self-paced/courses/21df54aa-936c-4845-b435-3c17fc76871a/sprints/145737/topics/769897aa-1f73-4c17-9f2f-9bbbbb4a5cb1/lessons/b36bed70-edce-46d9-84f2-a968e6f2355b/",
 				},
@@ -169,8 +173,10 @@ func TestURLShortenerHandler_PostShortenHandler(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			urlStorage, _ := storage.NewURLStorage(tt.fields.fileStoragePath)
 			handler := &URLShortenerHandler{
-				URLRepository: tt.fields.URLRepository,
+				URLRepository:   urlStorage,
+				BaseResponseURL: "http://example.com/",
 			}
 
 			w := httptest.NewRecorder()
