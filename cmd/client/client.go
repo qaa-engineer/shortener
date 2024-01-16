@@ -28,13 +28,12 @@ func main() {
 	}
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	response, err := client.Do(request)
+
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Статус-код ", response.Status)
-	defer func(Body io.ReadCloser) {
-		_ = Body.Close()
-	}(response.Body)
+	defer response.Body.Close()
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		panic(err)
