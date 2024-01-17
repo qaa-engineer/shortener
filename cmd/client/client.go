@@ -28,6 +28,7 @@ func main() {
 	}
 	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	response, err := client.Do(request)
+	defer response.Body.Close()
 
 	if err != nil {
 		panic(err)
