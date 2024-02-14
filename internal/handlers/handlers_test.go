@@ -65,9 +65,7 @@ func TestURLShortenerHandler_GetHandler(t *testing.T) {
 			handler.GetHandler(w, r)
 
 			res := w.Result()
-			defer func(Body io.ReadCloser) {
-				_ = Body.Close()
-			}(res.Body)
+			defer res.Body.Close()
 
 			assert.Equal(t, test.want.code, res.StatusCode)
 			assert.Equal(t, test.want.contentType, res.Header.Get("Content-Type"))
@@ -117,9 +115,7 @@ func TestURLShortenerHandler_PostHandler(t *testing.T) {
 			handler.PostHandler(w, r)
 
 			res := w.Result()
-			defer func(Body io.ReadCloser) {
-				_ = Body.Close()
-			}(res.Body)
+			defer res.Body.Close()
 			resBody, err := io.ReadAll(res.Body)
 
 			str := string(resBody)

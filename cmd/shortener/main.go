@@ -11,6 +11,7 @@ import (
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Use(middleware.AllowContentType("text/plain"))
 
 	urlShortenerHandler := handlers.NewURLShortenerHandler()
 
